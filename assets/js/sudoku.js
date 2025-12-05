@@ -209,8 +209,12 @@ class SudokuGame {
         for (let row = 0; row < 9; row++) {
             for (let col = 0; col < 9; col++) {
                 if (grid[row][col] === 0) {
-                    // Shuffle numbers for randomization
-                    const shuffled = numbers.sort(() => Math.random() - 0.5);
+                    // Fisher-Yates shuffle for proper randomization
+                    const shuffled = [...numbers];
+                    for (let i = shuffled.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                    }
                     
                     for (let num of shuffled) {
                         if (this.isValid(grid, row, col, num)) {
@@ -529,7 +533,10 @@ class SudokuGame {
         this.timerInterval = setInterval(() => {
             this.timer++;
             this.updateUI();
-            this.saveGame();
+            // Save game every 10 seconds to reduce localStorage writes
+            if (this.timer % 10 === 0) {
+                this.saveGame();
+            }
         }, 1000);
     }
 
@@ -554,8 +561,44 @@ class SudokuGame {
 
     onIntegrityDepleted() {
         this.stopTimer();
-        alert('SYSTEM BREACH DETECTED\n\nIntegrity compromised. Resetting...');
-        this.resetGame();
+        this.showBreachModal();
+    }
+
+    showBreachModal() {
+        const modal = document.getElementById('completion-modal');
+        const modalTitle = modal.querySelector('.modal-title');
+        const modalSubtitle = modal.querySelector('.modal-subtitle');
+        const modalBody = modal.querySelector('.modal-body');
+        const modalBtn = document.getElementById('modal-new-game');
+        
+        // Update modal content for breach
+        modalTitle.textContent = 'SYSTEM BREACH DETECTED';
+        modalSubtitle.textContent = '// INTEGRITY COMPROMISED';
+        modalBody.innerHTML = '<p style="text-align: center; color: #ef4444; font-size: 1.125rem; line-height: 1.75;">System integrity has reached critical levels. All progress has been lost. Restart decryption protocol.</p>';
+        modalBtn.textContent = 'RESTART SYSTEM';
+        
+        modal.classList.add('active');
+        
+        // Reset modal for next use
+        modalBtn.onclick = () => {
+            modal.classList.remove('active');
+            modalTitle.textContent = 'DECRYPTION COMPLETE';
+            modalSubtitle.textContent = '// SYSTEM UNLOCKED';
+            modalBody.innerHTML = `
+                <div class="completion-stats">
+                    <div class="completion-stat">
+                        <span class="completion-label">TIME</span>
+                        <span class="completion-value" id="completion-time">00:00</span>
+                    </div>
+                    <div class="completion-stat">
+                        <span class="completion-label">INTEGRITY</span>
+                        <span class="completion-value" id="completion-integrity">100%</span>
+                    </div>
+                </div>
+            `;
+            modalBtn.textContent = 'START NEW DECRYPTION';
+            this.resetGame();
+        };
     }
 
     // ========================================
