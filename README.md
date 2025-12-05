@@ -244,12 +244,13 @@ git push origin feature/yeni-ozellik
 
 ## Lisans
 
-MIT
+GPL3
 
 ## İletişim
 
-Sorular veya hatalar için: oguzhanyeni@gmail.com
+Sorular veya hatalar için: oguzhan.duyar.ogresyus@gmail.com
 
 ---
 
 **Yapı Sürümü**: 1.0.0 | **Son Güncelleme**: 2024 | **Durum**: Üretim Hazırı ✅
+
